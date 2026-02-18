@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import time, hashlib
 import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
+
 
 app = Flask(__name__)
 
@@ -13,6 +13,10 @@ stats = {
     "hits":0,
     "miss":0
 }
+
+def cosine_similarity(a,b):
+    return np.dot(a,b)/(np.linalg.norm(a)*np.linalg.norm(b))
+
 
 def normalize(q):
     return q.strip().lower()
@@ -27,10 +31,11 @@ def embed(text):
 
 def semantic_search(vec):
     for key,data in cache.items():
-        sim = cosine_similarity([vec],[data["embedding"]])[0][0]
+        sim = cosine_similarity(vec, data["embedding"])
         if sim > 0.95:
             return key,data
     return None,None
+
 
 def call_ai(q):
     time.sleep(1)
